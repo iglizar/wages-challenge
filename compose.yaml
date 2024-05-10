@@ -1,0 +1,45 @@
+# wages-frontend (3000)
+# wages-backend (3001)
+# wages-database (5432)
+
+services:
+  wages-frontend:
+    build: ./frontend
+    container_name: wages-frontend
+    hostname: wages
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    working_dir: /usr/src/app
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - wages-backend
+
+  wages-backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - wages-database
+
+  wages-database:
+    container_name: wages-database
+    hostname: wages-database
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: database
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

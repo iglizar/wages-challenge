@@ -1,0 +1,50 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["linux-musl-openssl-3.0.x", "debian-openssl-3.0.x","debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  employeeId String              @id
+  token      String?
+  wageData   WageData[]
+  requests   WageAccessRequest[]
+
+  @@map("employees")
+}
+
+model WageData {
+  wageId     Int       @id @default(autoincrement())
+  employeeId String
+  amount     Float
+  currencyId String
+  currency   Currency  @relation(fields: [currencyId], references: [currencyId])
+  Employee   Employee? @relation(fields: [employeeId], references: [employeeId])
+
+  @@map("employeeWageData")
+}
+
+model Currency {
+  currencyId        String              @id @default(cuid())
+  currencyName      String
+  conversionRate    Float
+  wageData          WageData[]
+  WageAccessRequest WageAccessRequest[]
+
+  @@map("currencies")
+}
+
+model WageAccessRequest {
+  requestId  Int       @id @default(autoincrement())
+  employeeId String
+  amount     Float
+  currencyId String
+  currency   Currency  @relation(fields: [currencyId], references: [currencyId])
+  Employee   Employee? @relation(fields: [employeeId], references: [employeeId])
+
+  @@map("wageAccessRequests")
+}
