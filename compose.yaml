@@ -24,6 +24,8 @@ services:
     ports:
       - "3001:3001"
     environment:
+      - DATABASE_URL=postgresql://user:passw0rd@wages-database:5432/database
+      - TOKEN_SECRET=SeCrEtKeY321
       - NODE_ENV=production
     volumes:
       - ./backend:/usr/src/app
